@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PYTHON_VERSION=$1
+
+if [[ -z "$PYTHON_VERSION" ]]; then
+  echo "Please provide a Python version"
+  exit 1
+fi
+
+virtualenv .venv --python=$PYTHON_VERSION && source .venv/bin/activate
+
