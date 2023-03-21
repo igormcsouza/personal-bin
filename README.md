@@ -12,6 +12,10 @@ Here is my automations I usualy use for my job and life.
 ```bash	
 mkpyenv 3.9
 ```
+* `getDollar`: Show on screen the current USD-BRL rate and some others statistics.
+```bash
+getDollar
+```
 
 ## Troubleshoot
 
