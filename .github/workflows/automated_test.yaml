@@ -1,0 +1,18 @@
+name: "Automated Tests for Bin"
+
+on:
+  push:
+    branches:
+      - main
+    pull_requests:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: pip install -r scripts/requirements.txt
+      - name: Runs Pytest
+        run: pytest -vv
+    
