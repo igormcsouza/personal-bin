@@ -1,7 +1,13 @@
+from os import getenv
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
+import requests
 from forex_python.converter import CurrencyRates
+
+
+class ProcessError(Exception):
+    pass
 
 
 class RetrieveRateAbstract(ABC):
@@ -27,8 +33,53 @@ class RetrieveRateForex(RetrieveRateAbstract):
         return self.c.get_rate('USD', 'BRL', date)
 
 
+class RetrieveRateOpenExchange(RetrieveRateAbstract):
+
+    APP_ID = getenv("OPEN_EXCHANGE_APP_ID", "")
+    BASE_URL = "https://openexchangerates.org/api/"
+    HEADERS = {"accept": "application/json"}
+
+    def __init__(self):
+        if self.APP_ID == "":
+            raise ProcessError(
+                "There is no key configured on your Environment Variables"
+                "Please, set an OPEN_EXCHANGE_APP_ID env var on you shell"
+                "config file, or choose another source."
+            )
+
+    def get_today(self) -> str:
+        response = requests.get(
+            self.BASE_URL + f"latest.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            headers=self.HEADERS
+        )
+
+        # breakpoint()
+
+        resp_dict = response.json()
+
+        if resp_dict.get("error", False):
+            raise ProcessError(resp_dict["description"])
+
+        return resp_dict["rates"]["BRL"]
+
+    def get_before(self, date: datetime) -> str:
+        response = requests.get(
+            self.BASE_URL +
+            f"historical/{date.strftime('%Y-%m-%d')}.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            headers=self.HEADERS
+        )
+
+        resp_dict = response.json()
+
+        if resp_dict.get("error", False):
+            raise ProcessError(resp_dict["description"])
+
+        return resp_dict["rates"]["BRL"]
+
+
 def main():
-    source = RetrieveRateForex()
+    # Using OpenExchangeAPI source
+    source = RetrieveRateOpenExchange()
 
     # Get today's exchange rate from USD to BRL
     today = datetime.now()
