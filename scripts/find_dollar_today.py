@@ -1,25 +1,50 @@
-from forex_python.converter import CurrencyRates
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-# Create a CurrencyRates object
-c = CurrencyRates()
+from forex_python.converter import CurrencyRates
+
+
+class RetrieveRateAbstract(ABC):
+
+    @abstractmethod
+    def get_today(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_before(self, date: datetime) -> str:
+        pass
+
+
+class RetrieveRateForex(RetrieveRateAbstract):
+
+    # Create a CurrencyRates object
+    c = CurrencyRates()
+
+    def get_today(self) -> str:
+        return self.c.get_rate('USD', 'BRL')
+ 
+    def get_before(self, date: datetime) -> str:
+        return self.c.get_rate('USD', 'BRL', date)
+
 
 def main():
+    source = RetrieveRateForex()
+
     # Get today's exchange rate from USD to BRL
     today = datetime.now()
-    today_rate = c.get_rate('USD', 'BRL')
+    today_rate = source.get_today()
 
     # Get the exchange rate from 5 days ago
     five_days_ago = datetime.now() - timedelta(days=5)
-    five_days_ago_rate = c.get_rate('USD', 'BRL', five_days_ago)
+    five_days_ago_rate = source.get_before(five_days_ago)
 
     # Get the exchange rate from the first day of the current month
     first_day_of_month = datetime.now().replace(day=1)
-    first_day_rate = c.get_rate('USD', 'BRL', first_day_of_month)
+    first_day_rate = source.get_before(first_day_of_month)
 
     # Get the exchange rate from exactly 1 month ago
     one_month_ago = datetime.now() - timedelta(days=30)
-    one_month_ago_rate = c.get_rate('USD', 'BRL', one_month_ago)
+    one_month_ago_rate = source.get_before(one_month_ago)
 
     # Calculate the percentage difference between the rates
     five_days_ago_diff = ((today_rate - five_days_ago_rate) / five_days_ago_rate) * 100
