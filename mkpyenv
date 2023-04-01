@@ -1,11 +1,16 @@
 #!/bin/bash
 
-PYTHON_VERSION=$1
+if [ -d ".venv" ]; then
+    echo "This folder already has a Python environment. Activating it!"
+    source .venv/bin/activate
+else
+  PYTHON_VERSION=$1
 
-if [[ -z "$PYTHON_VERSION" ]]; then
-  echo "Please provide a Python version"
-  exit 1
+  if [[ -z "$PYTHON_VERSION" ]]; then
+    echo "Please provide a Python version"
+    exit 1
+  fi
+
+  virtualenv .venv --python=$PYTHON_VERSION && source .venv/bin/activate
 fi
-
-virtualenv .venv --python=$PYTHON_VERSION && source .venv/bin/activate
 
