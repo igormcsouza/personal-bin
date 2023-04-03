@@ -1,3 +1,6 @@
 forex-python==1.8
 freezegun==1.2.2
 pytest==7.2.2
+google==3.0.0
+google-api-python-client==2.83.0
+
