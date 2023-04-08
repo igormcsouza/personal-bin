@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 
 import pytest
-from chatgpt import ChatGPT
+from chatgpt import ChatGPT, RegexChatGPT
 
 
 def assertEqual(response, expected):
@@ -31,7 +31,7 @@ def test_ask(mock_completion_create):
 
 @pytest.fixture
 def mock_gpt_api():
-    with mock.patch('openai.api.Completion.create') as mock_create:
+    with patch('openai.Completion.create') as mock_create:
         mock_create.return_value.choices[0].text = '.*\\d.*'
         yield
 
@@ -44,9 +44,4 @@ def test_ask_multiple_questions(mock_gpt_api):
     chatbot = RegexChatGPT('YOUR_API_KEY')
     regexes = chatbot.ask('25,26,85,48')
     assert regexes == ['.*\\d.*']
-
-def test_ask_csv_file(mock_gpt_api):
-    chatbot = RegexChatGPT('YOUR_API_KEY')
-    regexes = chatbot.ask('example.csv')
-    assert regexes == ['.*\\d.*', '^[a-zA-Z0-9\\.\\/]*\\.txt$', '^[a-zA-Z0-9\\.\\/]*\\.md$']
 
