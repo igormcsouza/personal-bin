@@ -2,4 +2,5 @@ forex-python==1.8
 freezegun==1.2.2
 pytest==7.2.2
 openai==0.27.4
+requests
 

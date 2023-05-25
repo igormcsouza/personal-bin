@@ -1,25 +1,101 @@
-from forex_python.converter import CurrencyRates
+from os import getenv
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-# Create a CurrencyRates object
-c = CurrencyRates()
+import requests
+from forex_python.converter import CurrencyRates
+
+
+class ProcessError(Exception):
+    pass
+
+
+class RetrieveRateAbstract(ABC):
+
+    @abstractmethod
+    def get_today(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_before(self, date: datetime) -> str:
+        pass
+
+
+class RetrieveRateForex(RetrieveRateAbstract):
+
+    # Create a CurrencyRates object
+    c = CurrencyRates()
+
+    def get_today(self) -> str:
+        return self.c.get_rate('USD', 'BRL')
+ 
+    def get_before(self, date: datetime) -> str:
+        return self.c.get_rate('USD', 'BRL', date)
+
+
+class RetrieveRateOpenExchange(RetrieveRateAbstract):
+
+    APP_ID = getenv("OPEN_EXCHANGE_APP_ID", "")
+    BASE_URL = "https://openexchangerates.org/api/"
+    HEADERS = {"accept": "application/json"}
+
+    def __init__(self):
+        if self.APP_ID == "":
+            raise ProcessError(
+                "There is no key configured on your Environment Variables"
+                "Please, set an OPEN_EXCHANGE_APP_ID env var on you shell"
+                "config file, or choose another source."
+            )
+
+    def get_today(self) -> str:
+        response = requests.get(
+            self.BASE_URL + f"latest.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            headers=self.HEADERS
+        )
+
+        # breakpoint()
+
+        resp_dict = response.json()
+
+        if resp_dict.get("error", False):
+            raise ProcessError(resp_dict["description"])
+
+        return resp_dict["rates"]["BRL"]
+
+    def get_before(self, date: datetime) -> str:
+        response = requests.get(
+            self.BASE_URL +
+            f"historical/{date.strftime('%Y-%m-%d')}.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            headers=self.HEADERS
+        )
+
+        resp_dict = response.json()
+
+        if resp_dict.get("error", False):
+            raise ProcessError(resp_dict["description"])
+
+        return resp_dict["rates"]["BRL"]
+
 
 def main():
+    # Using OpenExchangeAPI source
+    source = RetrieveRateOpenExchange()
+
     # Get today's exchange rate from USD to BRL
     today = datetime.now()
-    today_rate = c.get_rate('USD', 'BRL')
+    today_rate = source.get_today()
 
     # Get the exchange rate from 5 days ago
     five_days_ago = datetime.now() - timedelta(days=5)
-    five_days_ago_rate = c.get_rate('USD', 'BRL', five_days_ago)
+    five_days_ago_rate = source.get_before(five_days_ago)
 
     # Get the exchange rate from the first day of the current month
     first_day_of_month = datetime.now().replace(day=1)
-    first_day_rate = c.get_rate('USD', 'BRL', first_day_of_month)
+    first_day_rate = source.get_before(first_day_of_month)
 
     # Get the exchange rate from exactly 1 month ago
     one_month_ago = datetime.now() - timedelta(days=30)
-    one_month_ago_rate = c.get_rate('USD', 'BRL', one_month_ago)
+    one_month_ago_rate = source.get_before(one_month_ago)
 
     # Calculate the percentage difference between the rates
     five_days_ago_diff = ((today_rate - five_days_ago_rate) / five_days_ago_rate) * 100
