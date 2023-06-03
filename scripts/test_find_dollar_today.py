@@ -1,7 +1,6 @@
 """
 Test getDollar main function
 """
-import os
 from unittest.mock import patch
 from datetime import datetime, timedelta
 
@@ -33,7 +32,8 @@ def test_executes_correctly(get_before, get_today):
         datetime.now() - timedelta(days=30)  # One month Ago
     ]
 
-    rate, five_days, first_month_day, one_month = find_dollar_today.get_results(source, dates)
+    rate, five_days, first_month_day, one_month = find_dollar_today\
+        .get_results(source, dates)
 
     get_today.assert_called()
     get_before.assert_called()
@@ -73,7 +73,8 @@ def test_calculates_correctly(get_before, get_today):
         datetime.now() - timedelta(days=30)  # One month Ago
     ]
 
-    rate, five_days, first_month_day, one_month = find_dollar_today.get_results(source, dates)
+    rate, five_days, first_month_day, one_month = find_dollar_today\
+        .get_results(source, dates)
 
     get_today.assert_called()
     get_before.assert_called()
@@ -82,4 +83,3 @@ def test_calculates_correctly(get_before, get_today):
     assert_almost_equals(five_days, 0.97, 2)
     assert_almost_equals(first_month_day, 1.96, 2)
     assert_almost_equals(one_month, -0.95, 2)
-

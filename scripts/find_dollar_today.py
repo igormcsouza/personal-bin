@@ -7,7 +7,7 @@ from find_dollar.utils import print_results
 from find_dollar.database import DataModel, insert_one, create_tables
 from find_dollar.sources.abstract import RetrieveRateAbstract
 from find_dollar.sources.open_exchange import RetrieveRateOpenExchange
-    
+
 
 def get_results(source: Type[RetrieveRateAbstract], dates=list[datetime]):
     today_rate = source.get_today()
@@ -48,4 +48,3 @@ def main():
 
 if __name__ == "__main__":
     SystemExit(main())
-

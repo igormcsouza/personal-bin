@@ -8,8 +8,8 @@ Here is my automations I usualy use for my job and life.
 
 ## List of programs
 
-* `mkpyenv`: Creates a python environment on that folder which is called. Gets one argument which is the python version, for example: 
-```bash	
+* `mkpyenv`: Creates a python environment on that folder which is called. Gets one argument which is the python version, for example:
+```bash
 mkpyenv 3.9
 ```
 * `getDollar`: Show on screen the current USD-BRL rate and some others statistics.
@@ -20,4 +20,3 @@ getDollar
 ## Troubleshoot
 
 Nothing here yet! :D
-

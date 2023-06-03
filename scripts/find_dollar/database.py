@@ -32,12 +32,12 @@ def get_last():
     with Session(engine) as session:
         statement = select(DataModel)
         results: list[DataModel] = session.exec(statement)
-        
+
         timestamp = results[-1].timestamp
         today_rate = results[-1].today
         five_days_ago_diff = results[-1].five_days
         first_day_diff = results[-1].first_day
         one_month_ago_diff = results[-1].one_month
 
-        return timestamp, today_rate, five_days_ago_diff, first_day_diff, one_month_ago_diff
-
+        return (timestamp, today_rate, five_days_ago_diff,
+                first_day_diff, one_month_ago_diff)

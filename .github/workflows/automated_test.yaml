@@ -15,4 +15,3 @@ jobs:
         run: pip install -r scripts/requirements.txt
       - name: Runs Pytest
         run: pytest -vv
-    

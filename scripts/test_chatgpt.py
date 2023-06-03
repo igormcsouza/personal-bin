@@ -44,4 +44,3 @@ def test_ask_multiple_questions(mock_gpt_api):
     chatbot = RegexChatGPT('YOUR_API_KEY')
     regexes = chatbot.ask('25,26,85,48')
     assert regexes == ['.*\\d.*']
-

@@ -26,7 +26,7 @@ class RetrieveRateOpenExchange(RetrieveRateAbstract):
 
     def get_today(self) -> str:
         response = requests.get(
-            self.BASE_URL + f"latest.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            self.BASE_URL + f"latest.json?app_id={self.APP_ID}&base=USD&symbols=BRL",
             headers=self.HEADERS
         )
 
@@ -42,7 +42,7 @@ class RetrieveRateOpenExchange(RetrieveRateAbstract):
     def get_before(self, date: datetime.datetime) -> str:
         response = requests.get(
             self.BASE_URL +
-            f"historical/{date.strftime('%Y-%m-%d')}.json?app_id={self.APP_ID}&base=USD&symbols=BRL", 
+            f"historical/{date.strftime('%Y-%m-%d')}.json?app_id={self.APP_ID}&base=USD&symbols=BRL",
             headers=self.HEADERS
         )
 

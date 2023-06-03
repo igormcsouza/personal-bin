@@ -1,7 +1,6 @@
 import argparse
 import os
 import csv
-import re
 
 import openai
 
@@ -33,7 +32,7 @@ class RegexChatGPT(ChatGPT):
             for row in reader:
                 data.append(row)
         return data
-    
+
     @staticmethod
     def _is_valid_path(path):
         # Check if the path exists and is a file
@@ -64,9 +63,10 @@ if __name__ == '__main__':
 
     api_key = os.environ.get("OPENAI_API_KEY")
     if api_key is None:
-        print("Please set your OpenAI API key as an environment variable: OPENAI_API_KEY")
+        print("Please set your OpenAI API key as an environment "
+              "variable: OPENAI_API_KEY")
         exit()
-    
+
     if args.question:
         chat = ChatGPT(api_key)
         question = args.question
@@ -80,4 +80,3 @@ if __name__ == '__main__':
     answer = chat.ask(question)
 
     print(answer)
-
