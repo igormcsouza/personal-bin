@@ -1,7 +1,9 @@
 forex-python==1.8
-freezegun==1.2.2
-pytest==7.2.2
 openai==0.27.4
 requests
 sqlmodel==0.0.8
 
+# Testing packages
+pre-commit==3.3.2
+freezegun==1.2.2
+pytest==7.2.2

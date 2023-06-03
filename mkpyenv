@@ -8,4 +8,3 @@ if [[ -z "$PYTHON_VERSION" ]]; then
 fi
 
 virtualenv .venv --python=$PYTHON_VERSION && source .venv/bin/activate
-

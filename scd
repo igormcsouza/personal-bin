@@ -30,4 +30,3 @@ fi
 # If the argument is not a valid directory, print an error message
 echo "Directory not found"
 return 1
-

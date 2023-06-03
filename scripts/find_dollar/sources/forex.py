@@ -12,6 +12,6 @@ class RetrieveRateForex(RetrieveRateAbstract):
 
     def get_today(self) -> str:
         return self.c.get_rate('USD', 'BRL')
- 
+
     def get_before(self, date: datetime.datetime) -> str:
         return self.c.get_rate('USD', 'BRL', date)
