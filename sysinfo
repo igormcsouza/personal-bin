@@ -1,4 +1,4 @@
-#!/bin/bahs
+#!/bin/bash
 
 for i in baseboard-manufacturer system-version system-product-name chassis-type system-serial-number bios-release-date bios-version
 do
