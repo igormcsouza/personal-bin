@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [[ "$1" == "--help" ]]; then
+    echo "cannedpy - Docker container management script for development"
+    echo "Usage: cannedpy"
+    echo "Options:"
+    echo "  --help    Show this help message and exit"
+    echo ""
+    echo "This script manages a Docker container for development purposes. It checks if a container with the specified name exists and starts it if it does, otherwise it creates a new container. If a requirements.txt file is found, it installs the dependencies inside the container. Also loads environment variables if listed on .env file. Additionally, it installs IPython and starts the container in interactive mode with IPython."
+    exit 0
+fi
+
+container_name=$(basename $(pwd))-dev
+existing_container=$(docker ps -aqf "name=$container_name")
+
+if [ -z "$existing_container" ]; then
+    echo " > Container does not exist. Creating new container..."
+    docker run -d \
+	    -v $(pwd):/home/dev \
+	    --name $container_name \
+	    python:${1:-3.11}-slim sleep infinity
+
+    echo " > Installing IPython..."
+    docker exec $container_name pip install ipython
+
+    requirements_file="requirements.txt"
+
+    if [ -f "$requirements_file" ]; then
+        echo " > Requirements file found. Installing requirements..."
+        docker exec -w /home/dev $container_name pip install -r $requirements_file
+    fi
+else
+    echo " > Container already exists. Starting existing container..."
+    docker start $existing_container > /dev/null
+fi
+
+env_file=".env"
+env_option=""
+
+if [ -f "$env_file" ]; then
+    echo " > Environment file found. Using environment variables from $env_file..."
+    env_option="--env-file $env_file"
+fi
+
+echo " > Starting container with IPython..."
+docker exec -it -w /home/dev $env_option $container_name ipython

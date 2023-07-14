@@ -17,6 +17,11 @@ mkpyenv 3.9
 getDollar
 ```
 
+* `cannedpy`: Spin up a python interpreter with the configurations of the current project. The first argument is the python version. To install requirements just add the `requirements.txt` to the folder, add `.env` if you need any env variable.
+```bash
+canndpy 3.11
+```
+
 ## Troubleshoot
 
 Nothing here yet! :D
