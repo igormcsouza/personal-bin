@@ -4,11 +4,45 @@ if [[ "$1" == "--help" ]]; then
     echo "cannedpy - Docker container management script for development"
     echo "Usage: cannedpy"
     echo "Options:"
-    echo "  --help    Show this help message and exit"
+    echo "  --help               Show this help message and exit"
+    echo "  -p <python-version>  Choose the version to run python (default '3.11')"
+    echo "  -c <command>         Set the command to run on the container (default 'ipython')"
     echo ""
     echo "This script manages a Docker container for development purposes. It checks if a container with the specified name exists and starts it if it does, otherwise it creates a new container. If a requirements.txt file is found, it installs the dependencies inside the container. Also loads environment variables if listed on .env file. Additionally, it installs IPython and starts the container in interactive mode with IPython."
     exit 0
 fi
+
+python_version="3.11"
+command_to_run="ipython"
+
+while getopts "p:c:-:" opt; do
+    case $opt in
+        p | python)
+            python_version="$OPTARG"
+            ;;
+        c | command)
+            command_to_run="$OPTARG"
+            ;;
+        -)
+            case $OPTARG in
+                python=*)
+                    python_version="${OPTARG#*=}"
+                    ;;
+                command=*)
+                    command_to_run="${OPTARG#*=}"
+                    ;;
+                *)
+                    echo "Invalid option: --$OPTARG"
+                    exit 1
+                    ;;
+            esac
+            ;;
+        \?)
+            echo "Usage: $0 [-p <python-version>] [-c <command>]"
+            exit 1
+            ;;
+    esac
+done
 
 container_name=$(basename $(pwd))-dev
 existing_container=$(docker ps -aqf "name=$container_name")
@@ -18,7 +52,7 @@ if [ -z "$existing_container" ]; then
     docker run -d \
 	    -v $(pwd):/home/dev \
 	    --name $container_name \
-	    python:${1:-3.11}-slim sleep infinity
+	    python:$python_version-slim sleep infinity
 
     echo " > Installing IPython..."
     docker exec $container_name pip install ipython
@@ -42,5 +76,5 @@ if [ -f "$env_file" ]; then
     env_option="--env-file $env_file"
 fi
 
-echo " > Starting container with IPython..."
-docker exec -it -w /home/dev $env_option $container_name ipython
+echo " > Starting container with '$command_to_run'..."
+docker exec -it -w /home/dev $env_option $container_name $command_to_run
