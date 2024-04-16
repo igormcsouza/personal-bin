@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Run the Docker container, passing the OPEN_API_KEY environment variable and any arguments
+docker run -e OPENAI_API_KEY -it igormcsouza/gpt4shell:0.1.0 "$@"

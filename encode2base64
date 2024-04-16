@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Function to check if xclip is installed
+check_xclip() {
+    if ! command -v xclip &> /dev/null
+    then
+        echo "xclip is not installed. Please install it using 'sudo apt install xclip' (for Ubuntu/Debian) or the appropriate package manager for your system."
+        exit 1
+    fi
+}
+
+# Function to encode file to base64 and copy to clipboard
+encode2base64() {
+    if [ -f "$1" ]; then
+        base64_content=$(base64 -w 0 "$1")
+        echo "$base64_content" | xclip -selection clipboard
+        echo "The Base64 text was copied to your clipboard"
+    else
+        echo "An error occurred, cannot transform into base64"
+        exit 1
+    fi
+}
+
+# Main function
+main() {
+    check_xclip
+    if [ $# -eq 1 ]; then
+        encode2base64 "$1"
+    else
+        echo "Usage: $0 /path/to/file"
+        exit 1
+    fi
+}
+
+# Execute the main function
+main "$@"

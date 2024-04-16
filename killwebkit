@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Get the list of process IDs (PIDs) for WebKitWebProcess
+pids=$(ps -ef | grep WebKitWebProcess | grep -v grep | awk '{print $2}')
+
+# Check if there are any PIDs found
+if [ -z "$pids" ]; then
+    echo "No WebKitWebProcess found."
+else
+    echo "Found WebKitWebProcess. Killing processes..."
+    # Loop through each PID
+    for pid in $pids; do
+        # Get the parent PID
+        parent_pid=$(ps -o ppid= -p $pid)
+        # Get the command associated with the parent PID
+        parent_command=$(ps -o comm= -p $parent_pid)
+        # Check if the parent command is pulseUI
+        if [ "$parent_command" = "pulseUI" ]; then
+            sudo kill -9 $pid
+            # echo "Killed process with PID $pid (Parent process: pulseUI)"
+        else
+            echo "Skipping process with PID $pid (Parent process: $parent_command)"
+        fi
+    done
+fi

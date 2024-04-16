@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+    directory="/"  # If no directory is specified, use root directory
+else
+    directory="$1"
+fi
+
+if [ "$#" -lt 2 ]; then
+    size_limit="1G"  # If no size is specified, use 1GB as the default size limit
+else
+    size_limit="$2"
+fi
+
+if ! [[ "$size_limit" =~ ^[0-9]+[KMGT]$ ]]; then
+    echo "Error: Invalid size format. Please use a valid size format like 500M."
+    exit 1
+fi
+
+# Ask for sudo password before running du and find commands
+echo "Please enter your password for disk usage analysis:"
+sudo -v
+
+# Extract numeric and alphabetic parts from the given size
+size_number=$(echo "$size_limit" | grep -oE '[0-9]+')
+size_unit=$(echo "$size_limit" | grep -oE '[KMGT]')
+
+echo -e "\nFolders above $size_limit"
+sudo du -h --max-depth=1 "$directory" 2>/dev/null | awk -v size_number="$size_number" -v size_unit="$size_unit" '$1 ~ /[0-9.]+[KMGT]/ && $2 != "." && $1 + 0 > size_number && $1 ~ size_unit {print $0}'
+
+echo -e "\nFiles above $size_limit"
+sudo find "$directory" -type f -size +$size_limit -exec du -h {} + 2>/dev/null | awk -v size_number="$size_number" -v size_unit="$size_unit" '$1 ~ /[0-9.]+[KMGT]/ {print $0}'
